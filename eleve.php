@@ -1,50 +1,65 @@
-// connection à la base de données via la récupération des données de php_connect.php
 <?php
     require('php_connect.php');
 ?>  
 
-<?php 
-    echo '<a href = "../index.php"> Accueil </a><br>';
-    echo '<a href = "ecole_sport.php"> Quels sports quelles écoles ? </a><br>';
-    echo '<a href = "eleve_sport.php">Elèves sports</a><br>';
+//répartition de manière aléatoire des élèves dans les écoles 1 à 3
+<?php
+
+    $sql = $db-> prepare ("SELECT * VALUES (:eleve_id, :ecole_id,) FROM eleve");
+    $sql->bindParam(':eleve_id', $eleve_id);
+    $sql->bindParam(':ecole_id', $ecole_id);
+    
+
+    $eleve_id = 0;
+    if ($eleve_id != 0) {
+        do {
+            $req = $db -> prepare("INSERT INTO eleve (eleve_id, ecole_id)
+            VALUES (:eleve_id, :eco)");
+            $req->bindParam(':eleve_id', $eleve_id);
+            $req->bindParam(':eco', $eco);
+            $eleve_id++;
+            $eco = rand(1, 3);
+            $req->execute();
+        }   
+        while($eleve_id <= 30); 
+    } 
+            
 ?>
 
 
-<?php 
-    $req = $db ->prepare("SELECT ecole_eleve.ecole_id as eeei, eleve.eleve_prenom as eep, eleve.eleve_nom as een 
-    FROM ecole_eleve 
-    LEFT OUTER JOIN eleve ON ecole_eleve.eleve_id = eleve.eleve_id ORDER BY ecole_eleve.ecole_id ");
-   
-    $req->execute();
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            eleve
+        </title>
+    </head>
+    <body>
 
+        <?php 
 
-    while($donnees = $req->fetch()) {
-        echo $donnees['eeei'].' '.$donnees['eep'].' '.$donnees['een'] . '<br>';
-    }
+            echo '<a href = "../index.php"> Accueil </a><br>';
+            echo '<a href = "eleve_sport.php">Elèves sports</a><br>';
+        ?>
 
-    $req -> closeCursor();
+//Afficher le nombre d'élèves par école
+        <?php 
 
-    echo "<br>";
-
-    $req2 = $db ->query("SELECT COUNT(*) as eleve_id FROM ecole_eleve WHERE ecole_id = 1");
-    $donnees2 = $req2->fetch();
-    $req2-> closeCursor();
-    echo  "Ecole 1".' '.$donnees2['eleve_id']. "<br>";
-
+            $req = $db ->query("SELECT COUNT(*) as eleve_id FROM eleve WHERE ecole_id = 1");
+            $donnees = $req->fetch();
+            $req-> closeCursor();
+            echo  " Il y a dans l'école 1".' '.$donnees['eleve_id'].' '."élèves".  "<br>";
     
-    $req3 = $db ->query("SELECT COUNT(*) as eleve_id FROM ecole_eleve WHERE ecole_id = 2");
-    $donnees3 = $req3->fetch();
-    $req3-> closeCursor();
-    echo "Ecole 2".' '.$donnees3['eleve_id']. "<br>";
-
+            $req = $db ->query("SELECT COUNT(*) as eleve_id FROM eleve WHERE ecole_id = 2");
+            $donnees = $req->fetch();
+            $req-> closeCursor();
+            echo  " Il y a dans l'école 2".' '.$donnees['eleve_id'].' '."élèves".  "<br>";
     
-    $req4 = $db ->query("SELECT COUNT(*) as eleve_id FROM ecole_eleve WHERE ecole_id = 3");
-    $donnees4 = $req4->fetch();
-    $req4-> closeCursor();
-    echo "Ecole 3".' '.$donnees4['eleve_id']. "<br>";
+            $req = $db ->query("SELECT COUNT(*) as eleve_id FROM eleve WHERE ecole_id = 3");
+            $donnees = $req->fetch();
+            $req-> closeCursor();
+            echo  " Il y a dans l'école 3".' '.$donnees['eleve_id'].' '."élèves".  "<br>";
 
-
-
-?>    
-
-
+        ?>
+    </body>
+</html>            
